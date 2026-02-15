@@ -19,7 +19,7 @@ const mapState = (state: RootState) => {
     value,
     error,
     isReadOnly: !isDraft,
-    canEditName: isDraft
+    canEditName: window.serverData.curcnpt_id === ''
   };
 };
 

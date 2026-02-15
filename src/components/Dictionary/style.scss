@@ -12,24 +12,25 @@
   border: 0;
   border-bottom: 2px solid $mainAccent;
 
-  & > * {
+  &>* {
     padding: 8px 16px;
     font-size: 14px;
     white-space: normal;
   }
 
-  & > option:checked {
-      background: linear-gradient($mainAccent, $mainAccent);
+  &>option:checked {
+    background: linear-gradient($mainAccent, $mainAccent);
   }
 
-  & > :first-child {
+  &> :first-child {
     padding-top: 12px;
   }
-  & > :last-child {
+
+  &> :last-child {
     padding-bottom: 12px;
   }
 
-  & > :nth-child(2n) {
+  &> :nth-child(2n) {
     background-color: rgba($color: $mainAccent, $alpha: 0.1);
   }
 }
@@ -40,4 +41,15 @@
   height: 140px;
   overflow-y: scroll;
   white-space: pre-line;
+}
+
+.button {
+  background: $successColor;
+  color: $auxColor;
+  display: flex;
+  align-items: center;
+  padding-left: 16px;
+  padding-right: 8px;
+  width: 100%;
+  height: 36px;
 }

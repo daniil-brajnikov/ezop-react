@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import QueryBox from '../../containers/QueryBox';
+import AnswerBox from '../../containers/AnswerBox';
 import styles from './style.scss';
 import PageHeader from '../../containers/PageHeader';
 import OntologyBox from '../../containers/OntologyBox';
@@ -21,22 +22,27 @@ const App: FC<Props> = ({ showOntologyLogs }) => {
         <Dictionary className={styles.dictionary} />
         <div className={styles.blockLayout}>
           <div className={styles.block}>
-            <div>
+            <div className={styles.block}>
               <OntologyToolbar />
               <OntologyBox />
             </div>
             {showOntologyLogs && <OntologyLogs className={styles.logs} />}
           </div>
           <div className={styles.block}>
-            <div>
+            <div className={styles.block}>
               <QueryToolbar />
               <QueryBox />
+            </div>
+          </div>
+          <div className={styles.block}>
+            <div className={styles.block} style={{ width: '60%' }}>
+              <AnswerBox />
             </div>
             <QueryLogs className={styles.logs} />
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

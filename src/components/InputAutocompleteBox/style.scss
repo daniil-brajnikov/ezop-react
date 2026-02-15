@@ -1,0 +1,55 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background-color: $mainBack;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding-left: 40px;
+  padding-right: 16px;
+  width: 100%;
+  height: 36px;
+  min-height: 36px;
+  transition: all 0.3s;
+
+  &.idle {
+    background-color: $mainAccent;
+  }
+
+  &.success {
+    background-color: $successColor;
+  }
+
+  &.error {
+    background-color: $errorColor;
+  }
+}
+
+.name {
+  color: $auxColor;
+  font-weight: bold;
+}
+
+.nameEdit {
+  padding: 2px 8px;
+  color: $auxColor;
+  font-weight: bold;
+  border: 0;
+  background: transparent;
+}
+
+.editIcon {
+  fill: $auxColor;
+}
+
+.rightBlock {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  color: $auxColor;
+  font-weight: bold;
+}

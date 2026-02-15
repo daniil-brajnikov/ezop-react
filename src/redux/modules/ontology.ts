@@ -65,41 +65,70 @@ export const ontologyReducer = withState(initialState)
   }));
 
 export const buildOntology: ThunkAction = () => async (dispatch, getState) => {
-  const { ontology }: RootState = getState();
-  console.log({ ontology });
-
-  const [rawError, logs] = (await requestBuildOntology(ontology.value)) ?? [];
-  const error = rawError
-    .trim()
-    .replace(/\[\d+\]/g, '')
-    .trim();
-  const status = error ? 'error' : 'success';
-  console.log({ error, logs, status });
+  const {
+    ontology: {
+      value,
+      name
+    }
+  }: RootState = getState();
 
   let statusText;
-  if (status === 'error') {
-    statusText = 'Ошибка построения';
-  } else if (status === 'success') {
+  let error;
+  let logs;
+  let status;
+  try {
+    logs = (await requestBuildOntology(value, name)) ?? [];
+    status = 'success';
     statusText = 'Онтология построена';
   }
+  catch (err) {
+    console.error(err);
+    error = err.name;
+    logs = err.message;
+    status = 'error';
+    statusText = 'Ошибка построения';
+  }
 
-  dispatch(fsa.setOntology({ error, logs, status }));
+  dispatch(fsa.setOntology({
+    error,
+    logs,
+    status
+  }));
   dispatch(fsa.setStatusText(statusText));
 };
 
+
 export const saveOntology: ThunkAction = () => async (dispatch, getState) => {
   const {
-    ontology: { value, name }
+    ontology: {
+      value,
+      name
+    }
   }: RootState = getState();
-
   dispatch(ontologyFsa.setStatus('idle'));
   dispatch(ontologyFsa.setStatusText('Черновик'));
+
+  let error;
+  let logs;
+  let status;
+  let statusText;
   try {
-    await requestSaveOntology(value, name);
-    dispatch(ontologyFsa.setStatus('success'));
-    dispatch(ontologyFsa.setStatusText('Черновик успешно сохранен'));
-  } catch {
-    dispatch(ontologyFsa.setStatus('error'));
-    dispatch(fsa.setStatusText('Ошибка сохранения'));
+    logs = await requestSaveOntology(value, name, 'SaveOntology');
+    status = 'success';
+    statusText = 'Черновик сохранен';
   }
+  catch (err) {
+    console.error(err);
+    error = err.name;
+    logs = err.message;
+    status = 'error';
+    statusText = 'Ошибка сохранения';
+  }
+  dispatch(ontologyFsa.setStatus(status));
+  dispatch(fsa.setStatusText(statusText));
+  dispatch(fsa.setOntology({
+    error,
+    logs,
+    status
+  }));
 };

@@ -55,6 +55,13 @@ module.exports = {
         ]
       },
       {
+        test: /\.css$/,
+        use: [
+          'style-loader',
+          'css-loader'
+        ]
+      },
+      {
         test: /\.(js|ts)x?$/,
         use: ['babel-loader'],
         include: path.resolve(__dirname, 'src')

@@ -14,3 +14,8 @@ export interface Query {
   logs: string;
   status: ExecutionStatus;
 }
+/*
+export interface Answer {
+  value: string;
+}
+*/

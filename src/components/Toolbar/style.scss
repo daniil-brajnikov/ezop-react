@@ -14,13 +14,15 @@
   width: 100%;
   height: 36px;
 
-  &.idle  {
+  &.idle {
     background-color: $mainAccent;
   }
-  &.success  {
+
+  &.success {
     background-color: $successColor;
   }
-  &.error  {
+
+  &.error {
     background-color: $errorColor;
   }
 }
@@ -29,7 +31,9 @@
   display: flex;
   flex-direction: column;
 
-  & > * {
+  margin-bottom: 10px;
+
+  &>* {
     display: flex;
     justify-content: center;
     margin-top: 16px;

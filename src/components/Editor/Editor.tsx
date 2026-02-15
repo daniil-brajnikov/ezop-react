@@ -55,7 +55,6 @@ const Editor: FC<EditorProps> = ({
 
     const valueLines = value.split('\n');
     const errorLines = error.split('\n');
-    console.log({ value, valueLines, error, errorLines });
 
     const firstErrorLine = errorLines[0];
     let startRow = -1;
@@ -71,8 +70,6 @@ const Editor: FC<EditorProps> = ({
         break;
       }
     }
-
-    console.log({ startRow, startCol, endRow, endCol });
 
     setShouldShowError(true);
     setErrorMarker({

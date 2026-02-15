@@ -3,14 +3,16 @@ import { RootState } from '../redux/types';
 import Dictionary from '../components/Dictionary/Dictionary';
 import { Dispatch } from 'redux';
 import { dictionaryFsa, setItemDescription } from '../redux/modules/dictionary';
+import { queryFsa } from '../redux/modules/query';
 
 const mapState = (state: RootState) => {
-  const { dictionary } = state;
+  const { dictionary, query } = state;
 
   return {
     items: window.serverData.templates,
     isOpen: dictionary.isOpen,
-    description: dictionary.description
+    description: dictionary.description,
+    value: query.value,
   };
 };
 
@@ -20,6 +22,9 @@ const mapDispatch = (dispatch: Dispatch) => ({
   },
   onItemClick: (name: string) => {
     dispatch(setItemDescription(name));
+  },
+  onApplyButtonClick: (newValue: string) => {
+    dispatch(queryFsa.setValue(newValue));
   }
 });
 
