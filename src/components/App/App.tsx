@@ -4,14 +4,13 @@ import AnswerBox from '../../containers/AnswerBox';
 import styles from './style.scss';
 import PageHeader from '../../containers/PageHeader';
 import OntologyBox from '../../containers/OntologyBox';
-import QueryLogs from '../../containers/QueryLogs';
-import OntologyLogs from '../../containers/OntologyLogs';
+import Logs from '../../containers/Logs';
 import QueryToolbar from '../../containers/QueryToolbar';
 import OntologyToolbar from '../../containers/OntologyToolbar';
 import Dictionary from '../../containers/Dictionary';
 
 interface Props {
-  showOntologyLogs: boolean;
+  showOntologyLogs?: boolean;
 }
 
 const App: FC<Props> = ({ showOntologyLogs }) => {
@@ -26,7 +25,6 @@ const App: FC<Props> = ({ showOntologyLogs }) => {
               <OntologyToolbar />
               <OntologyBox />
             </div>
-            {showOntologyLogs && <OntologyLogs className={styles.logs} />}
           </div>
           <div className={styles.block}>
             <div className={styles.block}>
@@ -38,11 +36,11 @@ const App: FC<Props> = ({ showOntologyLogs }) => {
             <div className={styles.block} style={{ width: '60%' }}>
               <AnswerBox />
             </div>
-            <QueryLogs className={styles.logs} />
+            <Logs className={styles.logs} />
           </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 };
 

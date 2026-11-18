@@ -6,7 +6,7 @@ module.exports = {
   entry: './src/index.tsx',
   output: {
     filename: 'main.js',
-    path: path.resolve(__dirname, '../xampp/htdocs/ezop/ezop-react')
+    path: path.win32.resolve('C:\\xampp\\htdocs\\ezop\\ezop-react')
     // publicPath: '/ezop-react/'
   },
   resolve: {
@@ -56,10 +56,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: [
-          'style-loader',
-          'css-loader'
-        ]
+        use: ['style-loader', 'css-loader']
       },
       {
         test: /\.(js|ts)x?$/,
