@@ -8,6 +8,8 @@ declare namespace StyleScssModule {
     main: string;
     mappings: string;
     names: string;
+    queryBlock: string;
+    queryToolbar: string;
     sourceRoot: string;
     sources: string;
     sourcesContent: string;

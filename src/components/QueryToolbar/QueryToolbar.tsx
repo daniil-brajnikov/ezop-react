@@ -3,6 +3,7 @@ import RunIcon from '../../icons/Run.svg';
 import DeleteIcon from '../../icons/Delete.svg';
 import ZoomInIcon from '../../icons/ZoomIn.svg';
 import ZoomOutIcon from '../../icons/ZoomOut.svg';
+import PencilIcon from '../../icons/Pencil.svg';
 import Toolbar, { ToolbarProps } from '../Toolbar/Toolbar';
 import Button from '../Button/Button';
 
@@ -11,6 +12,7 @@ interface Props extends Pick<ToolbarProps, 'status'> {
   onZoomInClick(): void;
   onZoomOutClick(): void;
   onRunClick(): void;
+  onEditClick(): void;
 }
 
 const QueryToolbar: FC<Props> = ({
@@ -18,9 +20,17 @@ const QueryToolbar: FC<Props> = ({
   onDeleteClick,
   onZoomInClick,
   onZoomOutClick,
-  onRunClick
+  onRunClick,
+  onEditClick
 }) => {
   const buttons = [
+    ...(status === 'success'
+      ? [
+          <Button title="Изменить запрос" onClick={onEditClick} key="edit">
+            <PencilIcon width={25} height={25} />
+          </Button>
+        ]
+      : []),
     <Button
       title="Увеличить шрифт в окне запроса"
       onClick={onZoomInClick}

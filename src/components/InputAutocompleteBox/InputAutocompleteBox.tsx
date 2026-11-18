@@ -3,7 +3,9 @@ import classnames from 'classnames';
 import EditIcon from '../../icons/Pencil.svg';
 
 import styles from './style.scss';
-import AutocompleteEditor, { EditorProps }  from '../AutocompleteEditor/AutocompleteEditor';
+import AutocompleteEditor, {
+  EditorProps
+} from '../AutocompleteEditor/AutocompleteEditor';
 import { ExecutionStatus } from '../../types';
 
 interface Props extends EditorProps {
@@ -11,6 +13,7 @@ interface Props extends EditorProps {
   status: ExecutionStatus;
   canEditName: boolean;
   statusText?: string;
+  answer?: string;
   onNameEdit(name: string): void;
 }
 
@@ -18,6 +21,7 @@ const InputAutocompleteBox: FC<Props> = ({
   name,
   status,
   statusText,
+  answer,
   onChange,
   fontSize,
   value,
@@ -49,13 +53,15 @@ const InputAutocompleteBox: FC<Props> = ({
           {statusText !== undefined && <span>{statusText}</span>}
         </div>
       </div>
-      <AutocompleteEditor
-        onChange={onChange}
-        fontSize={fontSize}
-        value={value}
-        error={error}
-        isReadOnly={isReadOnly}
-      />
+      <div className={styles.editorArea}>
+        <AutocompleteEditor
+          onChange={onChange}
+          fontSize={fontSize}
+          value={value}
+          error={error}
+          isReadOnly={isReadOnly}
+        />
+      </div>
     </div>
   );
 };

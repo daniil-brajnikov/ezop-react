@@ -62,30 +62,30 @@ export const queryReducer = withState(initialState)
   }));
 
 export const runQuery: ThunkAction = () => async (dispatch, getState) => {
-  const {
-    query
-  }: RootState = getState();
+  const { query }: RootState = getState();
 
+  const originalQuery = query.value;
   let error;
   let logs;
   let status;
   let answer;
   try {
-    [answer, logs] = (await requestRunCommand(query.value)) ?? [];
+    [answer, logs] = (await requestRunCommand(originalQuery)) ?? [];
     status = 'success';
-  }
-  catch (err) {
+  } catch (err) {
     console.error(err);
     error = err.name;
     logs = err.message;
     status = 'error';
   }
 
-  dispatch(queryFsa.setQuery({
-    value: answer,
-    error,
-    logs,
-    status
-  }));
+  dispatch(
+    queryFsa.setQuery({
+      value: originalQuery,
+      error,
+      logs,
+      status
+    })
+  );
   dispatch(answersFsa.setValue(answer));
 };

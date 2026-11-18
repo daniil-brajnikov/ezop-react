@@ -3,10 +3,12 @@ import { RootState } from '../redux/types';
 import InputAutocompleteBox from '../components/InputAutocompleteBox/InputAutocompleteBox';
 import { Dispatch } from 'redux';
 import { queryFsa } from '../redux/modules/query';
+import { answersFsa } from '../redux/modules/answers';
 
 const mapState = (state: RootState) => {
   const {
-    query: { fontSize, value, error, status }
+    query: { fontSize, value, error, status, logs },
+    answers: { value: answer }
   } = state;
 
   let statusText;
@@ -16,19 +18,45 @@ const mapState = (state: RootState) => {
     statusText = 'Запрос выполнен успешно';
   }
 
-  let questions: string[] = [];
-  let requests: string[] = [];
-  const valueString = value?.replaceAll('\n', ' ').trim();
-  if (valueString) {
-    const requestRegex = /.+?ответ : ".+?"/g;
-    requests = Array.from(valueString.matchAll(requestRegex)).map(str => str.toString().replaceAll('\t', '').trim())
-    questions = requests.map(str => {
-      let question = str.toString().split('ответ :')[0].trim()
-      if (question.includes('Новая команда или вопрос:')) {
-        question = question.split('Новая команда или вопрос:')[1].trim()
-      }
-      return question
-    });
+  let conversation = answer
+    ? Array.from(answer.matchAll(/(.+?)ответ : "([\s\S]*?)"/g))
+        .map((match, index) => {
+          let question = match[1].replace(/\t/g, '').trim();
+          const questionParts = question.split('Новая команда или вопрос:');
+          question = questionParts[questionParts.length - 1].trim();
+          return `${index + 1}. ${question}\nОтвет: ${match[2]
+            .replace(/\t/g, '')
+            .trim()}`;
+        })
+        .join('\n\n')
+    : '';
+
+  if (status === 'success' && logs && logs.includes('Результат:')) {
+    let questions = value
+      .split(/\n\s*\n/)
+      .map(question => question.trim())
+      .filter(Boolean);
+    const logResults = logs
+      .split('Команда выполнена успешно.')
+      .map(result => result.trim())
+      .filter(result => result.includes('Результат:'));
+    if (questions.length < logResults.length) {
+      questions = value
+        .split(/\r?\n/)
+        .map(question => question.trim())
+        .filter(Boolean);
+    }
+    conversation = questions
+      .map((question, index) => {
+        const result = logResults[index] || '';
+        const resultParts = result.split('Результат:');
+        const answerText =
+          resultParts.length > 1
+            ? resultParts[resultParts.length - 1].trim()
+            : '';
+        return `${index + 1}. ${question}\nОтвет: ${answerText}`;
+      })
+      .join('\n\n');
   }
 
   return {
@@ -36,7 +64,8 @@ const mapState = (state: RootState) => {
     status,
     statusText,
     fontSize,
-    value: value ? (value.includes('ответ') ? questions.join('\n\n') : value) : '',
+    value: status === 'success' && conversation ? conversation : value,
+    isReadOnly: status === 'success' && !!conversation,
     error
   };
 };
@@ -45,6 +74,7 @@ const mapDispatch = (dispatch: Dispatch) => ({
   onChange: (value: string) => {
     dispatch(queryFsa.setValue(value));
     dispatch(queryFsa.setStatus('idle'));
+    dispatch(answersFsa.setValue(''));
   }
 });
 

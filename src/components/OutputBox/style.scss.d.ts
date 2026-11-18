@@ -7,8 +7,6 @@ declare namespace StyleScssModule {
     sources: string;
     sourcesContent: string;
     table: string;
-    td: string;
-    th: string;
     value: string;
     version: string;
   }

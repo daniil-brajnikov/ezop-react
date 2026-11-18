@@ -1,6 +1,7 @@
 declare namespace StyleScssModule {
   export interface IStyleScss {
     editIcon: string;
+    editorArea: string;
     error: string;
     header: string;
     idle: string;

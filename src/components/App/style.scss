@@ -50,6 +50,21 @@
     }*/
 }
 
+.queryBlock {
+    display: flex;
+    flex: 2 1 0;
+    flex-direction: column;
+    min-width: 0;
+    height: 100%;
+}
+
+.queryToolbar {
+    flex: 0 0 60px;
+    height: 100%;
+}
+
 .logs {
     margin-left: 12px;
+    flex: 1 1 0;
+    min-width: 0;
 }

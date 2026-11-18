@@ -12,18 +12,40 @@ export interface EditorProps {
   onChange(value: string): void;
 }
 
-type Trigger = { ':': { dataProvider: (token: string) => any; component: (name: string) => Element; output: (name: string) => string; }; } & TriggerType<string | object>
+type Trigger = {
+  ':': {
+    dataProvider: (token: string) => any;
+    component: (name: string) => Element;
+    output: (name: string) => string;
+  };
+} & TriggerType<string | object>;
 
 const Item = ({ entity: name }: { entity: string }) => <div>{name}</div>;
 const Loading = () => <div>Loading</div>;
 
-const dictionary: string[] = window.serverData.templates
+const dictionary: string[] = window.serverData.templates;
 
 const AutocompleteEditor: FC<EditorProps> = ({
   onChange,
   value = '',
-  fontSize = 16
+  fontSize = 16,
+  isReadOnly = false
 }) => {
+  if (isReadOnly) {
+    return (
+      <textarea
+        className={styles.editor}
+        value={value}
+        readOnly
+        style={{
+          fontSize: fontSize + 'px',
+          lineHeight: fontSize + 5 + 'px',
+          padding: 5,
+          resize: 'none'
+        }}
+      />
+    );
+  }
 
   return (
     <ReactTextareaAutocomplete
@@ -43,15 +65,21 @@ const AutocompleteEditor: FC<EditorProps> = ({
       }}
       onChange={(e: any) => onChange(e.target.value)}
       minChar={0}
-      trigger={{
-        ':': {
-          dataProvider: (token: string) => {
-            return token === '' ? dictionary : dictionary.filter((word: string) => word.toLowerCase().includes(token.toLowerCase()));
-          },
-          component: Item,
-          output: (name: string) => name
-        }
-      } as unknown as Trigger}
+      trigger={
+        ({
+          ':': {
+            dataProvider: (token: string) => {
+              return token === ''
+                ? dictionary
+                : dictionary.filter((word: string) =>
+                    word.toLowerCase().includes(token.toLowerCase())
+                  );
+            },
+            component: Item,
+            output: (name: string) => name
+          }
+        } as unknown) as Trigger
+      }
     />
   );
 };

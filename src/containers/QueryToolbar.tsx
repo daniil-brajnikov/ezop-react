@@ -3,6 +3,7 @@ import { RootState } from '../redux/types';
 import QueryToolbar from '../components/QueryToolbar/QueryToolbar';
 import { Dispatch } from 'redux';
 import { queryFsa, runQuery } from '../redux/modules/query';
+import { answersFsa } from '../redux/modules/answers';
 
 const mapState = (state: RootState) => {
   return {
@@ -22,6 +23,10 @@ const mapDispatch = (dispatch: Dispatch) => ({
   },
   onZoomOutClick: () => {
     dispatch(queryFsa.decreaseFont());
+  },
+  onEditClick: () => {
+    dispatch(queryFsa.setStatus('idle'));
+    dispatch(answersFsa.setValue(''));
   }
 });
 
