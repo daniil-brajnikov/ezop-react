@@ -6,6 +6,12 @@ declare namespace StyleScssModule {
     layout: string;
     logs: string;
     main: string;
+    mappings: string;
+    names: string;
+    sourceRoot: string;
+    sources: string;
+    sourcesContent: string;
+    version: string;
   }
 }
 

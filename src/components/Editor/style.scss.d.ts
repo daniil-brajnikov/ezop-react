@@ -1,7 +1,13 @@
 declare namespace StyleScssModule {
   export interface IStyleScss {
     editor: string;
+    mappings: string;
+    names: string;
     queryError: string;
+    sourceRoot: string;
+    sources: string;
+    sourcesContent: string;
+    version: string;
   }
 }
 

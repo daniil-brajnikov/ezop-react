@@ -4,7 +4,13 @@ declare namespace StyleScssModule {
     logo: string;
     logoText: string;
     main: string;
+    mappings: string;
+    names: string;
     rightBlock: string;
+    sourceRoot: string;
+    sources: string;
+    sourcesContent: string;
+    version: string;
   }
 }
 

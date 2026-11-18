@@ -5,10 +5,16 @@ declare namespace StyleScssModule {
     header: string;
     idle: string;
     main: string;
+    mappings: string;
     name: string;
     nameEdit: string;
+    names: string;
     rightBlock: string;
+    sourceRoot: string;
+    sources: string;
+    sourcesContent: string;
     success: string;
+    version: string;
   }
 }
 

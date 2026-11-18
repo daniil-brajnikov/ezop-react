@@ -6,6 +6,7 @@
   "private": true,
   "scripts": {
     "start": "webpack-dev-server  --config webpack.dev.js --hot",
+    "watch": "webpack --config webpack.dev.js --watch",
     "build": "webpack --config webpack.prod.js",
     "check-types": "tsc",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
