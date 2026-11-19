@@ -25,12 +25,42 @@ export async function parseResponse(response?: Response) {
   return plainText;
 }
 
+export interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export async function requestChatReply(messages: ChatMessage[]) {
+  const endpoint = window.serverData.llmChatUrl;
+  if (!endpoint) {
+    throw new Error('Чат с моделью пока не подключён на сервере.');
+  }
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      messages,
+      templates: window.serverData.templates,
+      ['env_id']: window.serverData['env_id']
+    })
+  });
+  if (!response.ok) throw new Error('Сервер не смог обработать сообщение.');
+  const result = await response.json();
+  if (typeof result.reply !== 'string') {
+    throw new Error('Сервер вернул ответ в неизвестном формате.');
+  }
+  return result.reply as string;
+}
+
 export async function requestRunCommand(cmd: string) {
   if (window.serverData.curcnpt_id == '') {
-    throw new Error('Перед выполнением запроса необходимо построить онтологию. Запрос не выполнен');
+    throw new Error(
+      'Перед выполнением запроса необходимо построить онтологию. Запрос не выполнен'
+    );
   }
 
-  if (cmd == "") {
+  if (cmd == '') {
     throw new Error('Команда должна быть непустой. Запрос не выполнен');
   }
 
@@ -83,10 +113,13 @@ export async function requestDictionaryItemDescription(itemName: string) {
 
 export async function requestBuildOntology(text: string, title: string) {
   if (text == '' || title == '') {
-    throw new Error('Название и текст должны быть непустыми. Построение не выполнено.');
+    throw new Error(
+      'Название и текст должны быть непустыми. Построение не выполнено.'
+    );
   }
   const inset = 'CC';
-  if (window.serverData.curcnpt_id == "") {
+  if (window.serverData.curcnpt_id == '') {
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     await requestSaveOntology(text, title, inset);
   }
 
@@ -142,7 +175,7 @@ async function requestSaveProlog(text: string, title: string, inset: string) {
     parsed[0] = parsed[0].trim();
     throw new Error(parsed);
   }
-  window.serverData.curcnpt_id = parsed[1].split('curcnpt_id: ')[1];
+  window.serverData['curcnpt_id'] = parsed[1].split('curcnpt_id: ')[1];
   return parsed[1];
 }
 
@@ -159,15 +192,25 @@ async function requestSaveDrupal(text: string, title: string) {
     params.append(pair[0], pair[1]);
   }
 
-  const res = await fetch(`../proc_data.php?group=${window.serverData.ontology.group_id}`, {
-    method: 'POST',
-    body: params
-  });
+  const res = await fetch(
+    `../proc_data.php?group=${window.serverData.ontology.group_id}`,
+    {
+      method: 'POST',
+      body: params
+    }
+  );
   const resStr = await res.text();
-  return resStr.split('<html>')[0].trim().replace(/(<([^>]+)>)/ig, '');
+  return resStr
+    .split('<html>')[0]
+    .trim()
+    .replace(/(<([^>]+)>)/gi, '');
 }
 
-export async function requestSaveOntology(text: string, title: string, inset: string) {
+export async function requestSaveOntology(
+  text: string,
+  title: string,
+  inset: string
+) {
   if (title == '') {
     throw new Error('Название должно быть непустым. Сохранение не выполнено.');
   }

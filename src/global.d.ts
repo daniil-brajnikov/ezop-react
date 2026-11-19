@@ -14,6 +14,7 @@ interface ServerData {
   group_id: string;
   ontology: Ontology;
   templates: string[];
+  llmChatUrl?: string;
 }
 
 declare global {

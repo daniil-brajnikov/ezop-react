@@ -7,6 +7,7 @@ import Logs from '../../containers/Logs';
 import QueryToolbar from '../../containers/QueryToolbar';
 import OntologyToolbar from '../../containers/OntologyToolbar';
 import Dictionary from '../../containers/Dictionary';
+import ChatWidget from '../ChatWidget/ChatWidget';
 
 interface Props {
   showOntologyLogs?: boolean;
@@ -16,6 +17,7 @@ const App: FC<Props> = ({ showOntologyLogs }) => {
   return (
     <div className={styles.main}>
       <PageHeader />
+      <ChatWidget />
       <div className={styles.layout}>
         <Dictionary className={styles.dictionary} />
         <div className={styles.blockLayout}>
