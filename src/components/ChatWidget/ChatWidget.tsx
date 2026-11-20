@@ -1,4 +1,4 @@
-import React, { FC, FormEvent, useState } from 'react';
+import React, { FC, FormEvent, KeyboardEvent, useState } from 'react';
 import styles from './style.scss';
 import { ChatMessage, requestChatReply } from '../../redux/helpers/request';
 
@@ -9,7 +9,9 @@ const ChatWidget: FC = () => {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
 
-  const sendMessage = async (event: FormEvent<HTMLFormElement>) => {
+  const sendMessage = async (
+    event: FormEvent<HTMLFormElement> | KeyboardEvent<HTMLTextAreaElement>
+  ) => {
     event.preventDefault();
     const content = draft.trim();
     if (!content || sending) return;
@@ -27,6 +29,15 @@ const ChatWidget: FC = () => {
       setError(err.message || 'Не удалось связаться с помощником.');
     } finally {
       setSending(false);
+    }
+  };
+
+  const handleInputKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      if (draft.trim() && !sending) {
+        sendMessage(event);
+      }
     }
   };
 
@@ -77,6 +88,7 @@ const ChatWidget: FC = () => {
           <textarea
             value={draft}
             onChange={event => setDraft(event.target.value)}
+            onKeyDown={handleInputKeyDown}
             placeholder="Напишите сообщение…"
             aria-label="Сообщение помощнику"
             rows={2}
