@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="84ec86b7-d507-4fef-be24-aa44ce595e8e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/src/components/ChatWidget/ChatWidget.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ChatWidget/ChatWidget.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ChatWidget/style.scss" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ChatWidget/style.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ChatWidget/style.scss.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ChatWidget/style.scss.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/redux/helpers/request.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/redux/helpers/request.ts" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 4,
+  "fromUser": false
+}]]></component>
+  <component name="ProjectId" id="3MNN0kGSnxWxzcgd990eLaJqBRX" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "C:/Users/asus/ezop-react"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="84ec86b7-d507-4fef-be24-aa44ce595e8e" name="Changes" comment="" />
+      <created>1795186851456</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1795186851456</updated>
+    </task>
+    <servers />
+  </component>
+</project>

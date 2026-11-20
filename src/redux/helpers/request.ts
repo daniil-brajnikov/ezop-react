@@ -28,6 +28,41 @@ export async function parseResponse(response?: Response) {
 export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
+  ontologyText?: string;
+}
+
+class OntologyBuildError extends Error {}
+
+function getChatMessages(messages: ChatMessage[]) {
+  const cleanMessages = messages.map(({ role, content }) => ({
+    role,
+    content
+  }));
+  let latestUserIndex = -1;
+  for (let i = cleanMessages.length - 1; i >= 0; i--) {
+    if (cleanMessages[i].role === 'user') {
+      latestUserIndex = i;
+      break;
+    }
+  }
+  if (latestUserIndex >= 0) {
+    const latestUserMessage = cleanMessages[latestUserIndex];
+    cleanMessages[latestUserIndex] = {
+      ...latestUserMessage,
+      content: `${latestUserMessage.content}\n\nВерни только формализацию на языке ЭЗОП. Не пиши Python, JavaScript, псевдокод, Markdown, заголовки, комментарии или объяснения. Каждая строка ответа должна быть предложением ЭЗОП, пригодным для проверки ядром Prolog.`
+    };
+  }
+  const maxMessages = 12;
+  if (cleanMessages.length <= maxMessages) return cleanMessages;
+
+  const firstUserMessage = cleanMessages.find(
+    message => message.role === 'user'
+  );
+  const recentMessages = cleanMessages.slice(-(maxMessages - 1));
+  if (firstUserMessage && !recentMessages.includes(firstUserMessage)) {
+    return [firstUserMessage].concat(recentMessages);
+  }
+  return cleanMessages.slice(-maxMessages);
 }
 
 export async function requestChatReply(messages: ChatMessage[]) {
@@ -40,17 +75,30 @@ export async function requestChatReply(messages: ChatMessage[]) {
     credentials: 'same-origin',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      messages,
+      messages: getChatMessages(messages),
       templates: window.serverData.templates,
+      ['ontology_context']: window.serverData.ontology.text,
       ['env_id']: window.serverData['env_id']
     })
   });
-  if (!response.ok) throw new Error('Сервер не смог обработать сообщение.');
-  const result = await response.json();
-  if (typeof result.reply !== 'string') {
+  let result: { reply?: unknown } | null;
+  try {
+    result = (await response.json()) as { reply?: unknown } | null;
+  } catch (err) {
+    if (!response.ok) throw new Error('Сервер не смог обработать сообщение.');
     throw new Error('Сервер вернул ответ в неизвестном формате.');
   }
-  return result.reply as string;
+  if (!response.ok) {
+    throw new Error(
+      result && typeof result.reply === 'string'
+        ? result.reply
+        : 'Сервер не смог обработать сообщение.'
+    );
+  }
+  if (!result || typeof result.reply !== 'string') {
+    throw new Error('Сервер вернул ответ в неизвестном формате.');
+  }
+  return result.reply;
 }
 
 export async function requestRunCommand(cmd: string) {
@@ -111,20 +159,24 @@ export async function requestDictionaryItemDescription(itemName: string) {
   }
 }
 
-export async function requestBuildOntology(text: string, title: string) {
+async function requestBuildOntologyInternal(
+  text: string,
+  title: string,
+  saveIfNew: boolean
+) {
   if (text == '' || title == '') {
     throw new Error(
       'Название и текст должны быть непустыми. Построение не выполнено.'
     );
   }
   const inset = 'CC';
-  if (window.serverData.curcnpt_id == '') {
+  if (saveIfNew && window.serverData.curcnpt_id == '') {
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
     await requestSaveOntology(text, title, inset);
   }
 
   const formData = new FormData();
-  formData.append('menu_item', 'CC_build_all');
+  formData.append('menu_item', saveIfNew ? 'CC_build_all' : 'CC_validate_only');
   formData.append('curcnpt_text', text);
   formData.append('inset', inset);
   formData.append('curcnpt_name', title);
@@ -142,13 +194,75 @@ export async function requestBuildOntology(text: string, title: string) {
 
   const parsed = await parseResponseWithDivider(res);
   console.log(parsed);
+  if (parsed.length < 2) {
+    throw new Error(parsed[0] || 'Сервер вернул ответ в неизвестном формате.');
+  }
   if (parsed[0] != '') {
-    const err = new Error();
+    const err = new OntologyBuildError();
     err.name = parsed[0].replace(/\[\d+\]/g, '').trim();
     err.message = parsed[1].replace(/\[\d+\]/g, '').trim();
     throw err;
   }
   return parsed[1];
+}
+
+export async function requestBuildOntology(text: string, title: string) {
+  return requestBuildOntologyInternal(text, title, true);
+}
+
+export async function requestValidateOntology(text: string, title: string) {
+  return requestBuildOntologyInternal(text, title, false);
+}
+
+function stripCodeFence(text: string) {
+  return text
+    .trim()
+    .replace(/^```(?:prolog|text)?\s*\n?/, '')
+    .replace(/\n?```$/, '')
+    .trim();
+}
+
+export async function requestChatFormalization(messages: ChatMessage[]) {
+  let conversation = messages.slice();
+  let lastValidationError = '';
+  const maxAttempts = 5;
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    let reply: string;
+    try {
+      reply = stripCodeFence(await requestChatReply(conversation));
+    } catch (err) {
+      if (lastValidationError) {
+        throw new Error(
+          `${err.message}\nПоследняя ошибка проверки Prolog: ${lastValidationError}`
+        );
+      }
+      throw err;
+    }
+    if (!reply) throw new Error('Помощник вернул пустую формализацию.');
+
+    try {
+      await requestValidateOntology(
+        reply,
+        window.serverData.ontology.title || 'Проверка формализации'
+      );
+      return reply;
+    } catch (err) {
+      if (!(err instanceof OntologyBuildError)) throw err;
+      lastValidationError =
+        err.message || 'Ядро Prolog отклонило формализацию.';
+      const validationError = lastValidationError;
+      conversation = messages.concat(
+        { role: 'assistant', content: reply },
+        {
+          role: 'user',
+          content: `Проверка ядром Prolog завершилась ошибкой:\n${validationError}\nИсправь текст онтологии и верни его целиком, без пояснений.`
+        }
+      );
+    }
+  }
+  throw new Error(
+    `Prolog не принял формализацию за ${maxAttempts} попыток. Последняя ошибка: ${lastValidationError}`
+  );
 }
 
 async function requestSaveProlog(text: string, title: string, inset: string) {

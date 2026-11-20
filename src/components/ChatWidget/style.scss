@@ -86,6 +86,16 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+.apply {
+  display: block;
+  margin-top: 10px;
+  padding: 7px 10px;
+  border: 0;
+  border-radius: 6px;
+  color: $auxColor;
+  background: $mainAccent;
+  cursor: pointer;
+}
 
 .welcome, .assistantMessage { background: $mainBack; }
 .userMessage { align-self: flex-end; color: $auxColor; background: $mainAccent; }

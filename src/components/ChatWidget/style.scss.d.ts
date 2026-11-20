@@ -1,5 +1,6 @@
 declare namespace StyleScssModule {
   export interface IStyleScss {
+    apply: string;
     assistantMessage: string;
     close: string;
     composer: string;

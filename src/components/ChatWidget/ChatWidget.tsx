@@ -1,8 +1,15 @@
 import React, { FC, FormEvent, KeyboardEvent, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { Dispatch } from 'redux';
 import styles from './style.scss';
-import { ChatMessage, requestChatReply } from '../../redux/helpers/request';
+import {
+  ChatMessage,
+  requestChatFormalization
+} from '../../redux/helpers/request';
+import { ontologyFsa } from '../../redux/modules/ontology';
 
 const ChatWidget: FC = () => {
+  const dispatch: Dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState('');
@@ -23,8 +30,14 @@ const ChatWidget: FC = () => {
     setSending(true);
 
     try {
-      const reply = await requestChatReply(nextMessages);
-      setMessages(nextMessages.concat({ role: 'assistant', content: reply }));
+      const reply = await requestChatFormalization(nextMessages);
+      setMessages(
+        nextMessages.concat({
+          role: 'assistant',
+          content: reply,
+          ontologyText: reply
+        })
+      );
     } catch (err) {
       setError(err.message || 'Не удалось связаться с помощником.');
     } finally {
@@ -65,8 +78,8 @@ const ChatWidget: FC = () => {
         <div className={styles.messages} aria-live="polite">
           {messages.length === 0 && (
             <div className={styles.welcome}>
-              Опишите предметную область или спросите, какой шаблон ЭЗОП
-              подойдёт.
+              Опишите задачу. Помощник составит онтологию из доступных шаблонов
+              и проверит её ядром Prolog.
             </div>
           )}
           {messages.map((message, index) => (
@@ -79,6 +92,22 @@ const ChatWidget: FC = () => {
               }
             >
               {message.content}
+              {message.ontologyText && window.serverData.ontology.isDraft && (
+                <button
+                  className={styles.apply}
+                  type="button"
+                  onClick={() => {
+                    dispatch(
+                      ontologyFsa.setValue(message.ontologyText as string)
+                    );
+                    dispatch(ontologyFsa.setStatus('idle'));
+                    dispatch(ontologyFsa.setStatusText('Черновик'));
+                    setOpen(false);
+                  }}
+                >
+                  Перенести в онтологию
+                </button>
+              )}
             </div>
           ))}
           {sending && <div className={styles.typing}>Помощник отвечает…</div>}
@@ -89,7 +118,7 @@ const ChatWidget: FC = () => {
             value={draft}
             onChange={event => setDraft(event.target.value)}
             onKeyDown={handleInputKeyDown}
-            placeholder="Напишите сообщение…"
+            placeholder="Опишите задачу для онтологии…"
             aria-label="Сообщение помощнику"
             rows={2}
           />
